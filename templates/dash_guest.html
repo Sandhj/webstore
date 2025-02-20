@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <!-- Import Google Font: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Import Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    /* Reset dan Global Style */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f5f5;
+      overflow-x: hidden;
+    }
+    /* Top Bar */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      color: #fff;
+      z-index: 1000;
+      background: #f6f5f9;
+    }
+    .toggle {
+      background: none;
+      border: none;
+      padding: 8px 10px;
+      font-size: 1rem;
+      color: #000;
+      cursor: pointer;
+      margin-right: 20px;
+      outline: none;
+      opacity: 0.70;
+    }
+    
+    .top-bar .balance-info {
+      margin-left: 15px;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      color: #000;
+      opacity: 0.70;
+    }
+    .top-bar .balance-info i {
+      margin-right: 5px;
+    }
+    /* Sidebar Off-Canvas */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 250px;
+      padding: 30px 20px 20px 20px;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-out;
+      z-index: 1100;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar.show {
+      transform: translateX(0);
+    }
+    /* Sidebar Header untuk Username */
+    .sidebar-header {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+      color: #333;
+    }
+    .sidebar-header i {
+      margin-right: 8px;
+      color: #000;
+    }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      padding: 12px 10px;
+      margin: 5px 0;
+      color: #333;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    .sidebar a:hover {
+      background: #f0f0f0;
+      transform: translateX(5px);
+    }
+    .sidebar a i {
+      margin-right: 10px;
+      color: #000;
+    }
+    .sidebar hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 10px 0;
+    }
+    /* Submenu */
+    .submenu {
+      display: none;
+      margin-left: 20px;
+      border-left: 2px solid #000;
+      padding-left: 10px;
+    }
+    .submenu a {
+      padding: 8px 10px;
+      margin: 3px 0;
+      font-size: 0.9rem;
+    }
+    .submenu a i {
+      font-size: 0.8rem;
+    }
+    /* Container untuk Menu Logout */
+    .sidebar-footer {
+      margin-top: auto; /* Posisikan di bagian bawah */
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
+    }
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.3);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+      z-index: 1050;
+    }
+    .overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    /* Main Content */
+    .content {
+      padding: 0;
+      margin-top: 60px;
+    }
+    iframe {
+      width: 100%;
+      height: calc(100vh - 60px);
+      border: none;
+      background: #f6f5f9;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <button class="toggle" id="toggleButton"><i class="fas fa-bars"></i></button>
+    <div class="balance-info"><i class="fas fa-wallet"></i> Rp{{ balance }}</div>
+  </div>
+  
+  <!-- Sidebar Off-Canvas -->
+  <div class="sidebar" id="sidebarMenu">
+    <!-- Header dengan Username -->
+    <div class="sidebar-header">
+      <i class="fas fa-user"></i> {{ username }}
+    </div>
+    <a href="/"><i class="fas fa-home"></i> Home</a>
+    <a href="#" id="vpnPremium"><i class="fas fa-shield-alt"></i> VPN Premium</a>
+    <!-- Submenu untuk VPN Premium -->
+    <div class="submenu" id="vpnSubmenu">
+      <a href="/create_temp/vmess" target="content-frame"><i class="fas fa-circle"></i> Vmess</a>
+      <a href="/create_temp/vless" target="content-frame"><i class="fas fa-circle"></i> Vless</a>
+      <a href="/create_temp/trojan" target="content-frame"><i class="fas fa-circle"></i> Trojan</a>
+    </div>
+    
+    <a href="#" id="managementAkun"><i class="fas fa-clock"></i> Management Akun</a>
+    <!-- Submenu untuk Management Akun -->
+    <div class="submenu" id="managementSubmenu">
+       <a href="/perpanjang_akun" target="content-frame"><i class="fas fa-circle"></i> Perpanjang Akun</a>
+       <a href="/riwayat" target="content-frame"><i class="fas fa-circle"></i> Akun Saya</a>
+    </div>
+    <a href="/status" target="content-frame"><i class="fas fa-server"></i> Status Server</a>
+    <a href="/deposit" target="content-frame"><i class="fas fa-wallet"></i> Deposit</a>
+    <hr>
+    <!-- Container untuk Menu Logout -->
+    <div class="sidebar-footer">
+      <a href="/logout"><i class="fas fa-sign-out-alt"></i> Keluar</a>
+    </div>
+  </div>
+  
+  <!-- Overlay untuk Sidebar -->
+  <div class="overlay" id="overlay"></div>
+  
+  <!-- Main Content -->
+  <div class="content">
+    <iframe id="content-frame" name="content-frame" src="/home"></iframe>
+  </div>
+  
+  <script>
+    const sidebar = document.getElementById('sidebarMenu');
+    const toggleButton = document.getElementById('toggleButton');
+    const overlay = document.getElementById('overlay');
+    const vpnPremium = document.getElementById('vpnPremium');
+    const vpnSubmenu = document.getElementById('vpnSubmenu');
+
+    // Tampilkan atau sembunyikan sidebar dan overlay saat tombol toggle diklik
+    toggleButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      sidebar.classList.toggle('show');
+      overlay.classList.toggle('show');
+    });
+    
+    // Tutup sidebar saat mengklik overlay
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('show');
+      overlay.classList.remove('show');
+    });
+    
+    // Tutup sidebar saat mengklik di luar area sidebar
+    document.addEventListener('click', function(e) {
+      if (!sidebar.contains(e.target) && !toggleButton.contains(e.target)) {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+      }
+    });
+
+    // Toggle submenu VPN Premium
+    vpnPremium.addEventListener('click', function(e) {
+      e.preventDefault();
+      vpnSubmenu.style.display = vpnSubmenu.style.display === 'block' ? 'none' : 'block';
+    });
+    
+    const managementAkun = document.getElementById('managementAkun');
+    const managementSubmenu = document.getElementById('managementSubmenu');
+
+    // Toggle submenu Management Akun
+    managementAkun.addEventListener('click', function(e) {
+      e.preventDefault();
+      managementSubmenu.style.display = managementSubmenu.style.display === 'block' ? 'none' : 'block';
+    });
+  </script>
+</body>
+</html>
